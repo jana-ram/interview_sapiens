@@ -9,7 +9,7 @@ try{
       console.log(`Server is running on port ${PORT}.`);
   });
   require('./app/routes/index')(app); // web service routes
-  //userSeed(); // seed initial data for database
+  userSeed(); // seed initial data for database
 } catch(e){
   throw new Error('sorry something went to wrong!'); 
 }

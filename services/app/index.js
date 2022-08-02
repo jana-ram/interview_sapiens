@@ -1,23 +1,18 @@
 const bodyParser = require('body-parser');
 const db = require("./models");
 var bcrypt = require("bcryptjs");
+var cors=require('cors');
 const crosSetup = app =>  {
     try {
+
+        app.use(cors({origin:true,credentials: true}));
         app.use((req, res, next) => {
-            if(res && res.getHeaders()){
-                var hs = Object.keys(res.getHeaders())
-                .filter(h => !h.match(/^access-control-\w+/));
-                var hObj = {};
-                hs.forEach(h => {hObj[h] = res.getHeaders()[h]});
-                delete res.getHeaders()['strict-transport-security'];
-            }
             res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader(
                 'Access-Control-Allow-Methods',
                 'OPTIONS, GET, POST, PUT, PATCH, DELETE'
             );
             res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-            res.setHeader('Last-Modified', (new Date()).toUTCString());
             next();
         });
         app.use(bodyParser.json({limit: '1024mb'}));
@@ -36,6 +31,16 @@ const userSeed = () =>{
             User.create({
                 username: "janakiraman",
                 password : bcrypt.hashSync("11223344", 8),
+                isActive : true
+            });
+            User.create({
+                username: "sapiens",
+                password : bcrypt.hashSync("welcome@123", 8),
+                isActive : true
+            });
+            User.create({
+                username: "virat",
+                password : bcrypt.hashSync("virat@123", 8),
                 isActive : true
             });
         });
