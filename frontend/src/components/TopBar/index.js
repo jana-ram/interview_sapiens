@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState }  from "react";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -24,13 +24,13 @@ const themes = [
 
 export default function TopBar({
   themechange, 
-  prevTheme
+  latestTheme
 }) {
-  const getTheme = getUserLS();
-  const [theme, setTheme] = React.useState(prevTheme);
-  const [loginPopUp, setLoginPopup] = React.useState(false);
-  const [changed , setChanged ] = React.useState(false);
-  const [isLogin , setIsLogin ] = React.useState(getTheme || false)
+  const userInfo = getUserLS();
+  const [theme, setTheme] = useState(latestTheme);
+  const [loginPopUp, setLoginPopup] = useState(false);
+  const [changed , setChanged ] = useState(false);
+  const [isLogin , setIsLogin ] = useState(userInfo || false)
 
   const updateTheme = (val) =>{
     themechange(val);
@@ -48,17 +48,17 @@ export default function TopBar({
   const handleChange = (event) => {
     updateTheme(event.target.value);
     updateThemeLS(event.target.value);
-    if(!getTheme){
-      setLoginPopup(true);
-    } else {   
+    if(isLogin){
       api({
         url : `http://3.88.57.44:3000/api/theme`,
         method:'PUT',
         data : {
-          "userGuid" : getTheme ? getTheme['id'] : '',
+          "userGuid" : userInfo ? userInfo['id'] : '',
           "theme" : event.target.value
         } 
       })
+    } else {
+      setLoginPopup(true);
     }
   };
   return (
@@ -91,8 +91,8 @@ export default function TopBar({
         <LoginPopup 
           setLoginPopup={closeEvent} 
           selectTheme={theme} 
-          prevTheme={updateTheme}
           isThemeChanged = {changed}
+          setTheme = {updateTheme}
         />
       }
     </Box>

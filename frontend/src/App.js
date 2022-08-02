@@ -15,7 +15,7 @@ function App() {
   return (
       <ThemeProvider theme={Theme(selectedTheme)}>
         <CssBaseline />
-        <TopBar themechange={ThemeChange}  prevTheme={selectedTheme}/>
+        <TopBar themechange={ThemeChange}  latestTheme={selectedTheme}/>
         <Container maxWidth="lg" style={{backgroundImage:`url(${welcomeImage})`}}>
         </Container>
       </ThemeProvider>

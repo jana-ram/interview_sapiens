@@ -1,4 +1,4 @@
-import React, { useState, useEffect }  from "react";
+import { useState }  from "react";
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
@@ -49,8 +49,13 @@ BootstrapDialogTitle.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
 
-export default function LoginPopup({setLoginPopup , selectTheme , prevTheme , isThemeChanged }) {
-  const [open, setOpen] = React.useState(true);
+export default function LoginPopup(props) {
+  const {
+    setLoginPopup , 
+    selectTheme , 
+    setTheme , 
+    isThemeChanged 
+  } = props;
   const [state,setState] = useState({
     username:"",
     password:""
@@ -104,24 +109,28 @@ export default function LoginPopup({setLoginPopup , selectTheme , prevTheme , is
             data,
             success,
             message
-          } = res;
-          localStorage.setItem('userData',JSON.stringify({
-            id : data.id || '',
-            token : data.accessToken || ''
-          }));
-          localStorage.setItem('theme',data.theme);
-          setLoginPopup(false);
-          if(isThemeChanged){
-            api({
-              url : `http://3.88.57.44:3000/api/theme`,
-              method:'PUT',
-              data : {
-                "userGuid" : data.id,
-                "theme" : selectTheme
-              } 
-            })
+          } = res;          
+          localStorage.setItem('theme',isThemeChanged ? selectTheme : (data && data['theme']) ?  data['theme'] : selectTheme);
+          if(success && success === 1 && data && data['id'] && data['accessToken']) {
+            localStorage.setItem('userData',JSON.stringify({
+              id : data['id'] || '',
+              token : data['accessToken'] || ''
+            }));
+            setLoginPopup(false);
+            if(isThemeChanged){
+              api({
+                url : `http://3.88.57.44:3000/api/theme`,
+                method:'PUT',
+                data : {
+                  "userGuid" : data['id'],
+                  "theme" : selectTheme
+                } 
+              });      
+            } else {
+              setTheme(data.theme);            
+            }
           } else {
-            prevTheme(data.theme);
+            alert(message)
           }
         })
     }
@@ -145,7 +154,7 @@ export default function LoginPopup({setLoginPopup , selectTheme , prevTheme , is
                 label="username"
                 name="username"
                 value={state.username}
-                helperText={error.username && "Invalid username"}
+                helperText={error.username && "This field is required"}
                 onChange={handleChange}
                 variant="outlined"
                 fullWidth
